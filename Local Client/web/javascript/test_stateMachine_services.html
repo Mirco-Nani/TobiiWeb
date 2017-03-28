@@ -39,7 +39,7 @@
                 services : [
                     {name : "GazeTracking_Service", page_url : window.location.href},
                     {name : "Log_Service"},
-                    {name : "Echo_Service"},
+                    {name : "Echo_Service", prepend : "Echo Service Responded: "},
                     {name : "Screenshot_Service"}
                     /*
                     ,{name : "ClientData_Service", page_url : window.location.href }
@@ -54,7 +54,8 @@
                 ],
                 onMessage : {
                     "Echo_Service" : function(message){
-                        console.log("received: "+message);
+                        console.log("received: ");
+                        console.log(message)
                     },
                     "Screenshot_Service" : function(message){
                         console.log("received: ");

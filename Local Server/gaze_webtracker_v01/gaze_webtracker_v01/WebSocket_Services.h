@@ -27,8 +27,7 @@ protected:
 	unsigned long _ancestor_hwnd;
 };
 
-//ToDo:
-// modificare POCO_WebSocket_Session e POCO_WebSocketServer per far emettere a _application_response_producer dei WebSocketSession_content quando il client manda dei frame durante la sessione!
+
 class WebSocket_Session {
 public:
 	WebSocket_Session() {};
@@ -80,12 +79,8 @@ public:
 	virtual string getName() { return "WebSocket_Generic_Service"; };
 	virtual void start();
 	virtual void stop();
-	//virtual void send() {};
-	//virtual void onFrameReceived(WebSocketSession_content frame) {};
-	//virtual void onNewSubscription(WebSocket_Session* session) {};
 	virtual ET_Producer<WebSocketSession_content>* onNewSubscription(WebSocket_Session* session) { return nullptr; };
 	virtual void onSessionClosed(WebSocket_Session* session){}
-	//virtual ET_Producer<WebSocketSession_content>* get_WebSocketSessionContent_Producer() { return nullptr; };
 
 protected:
 	bool _running = false;
@@ -102,20 +97,19 @@ public:
 	virtual string getName() { return "WebSocket_Service"; };
 	virtual ET_Producer<WebSocketSession_content>* onNewSubscription(WebSocket_Session* session);
 	virtual void onSessionClosed(WebSocket_Session* session);
-	//virtual void onSessionClosed(WebSocket_Session* session);
 
 protected:
 	virtual void onNewSession(
 		ET_Producer<WebSocketSession_Message>* inputProducer, 
 		ET_Producer<WebSocketSession_Message>* outputProducer, 
 		std::vector<ET_Generic_Producer*>* producers, 
-		std::vector<ET_Consumer*>* consumers){}
+		std::vector<ET_Consumer*>* consumers,
+		WebSocketSession_Message* subscriptionToken){}
 
 
 	virtual ET_Producer<WebSocketSession_Message>* getOutputProducer();
 	virtual ET_Producer<WebSocketSession_Message>* getInputProducer(string session_id);
 	ET_Producer<WebSocketSession_Message>* _outputProducer = nullptr;
-	//ET_Producer<WebSocketSession_Message>* _inputProducer = nullptr;
 	map<string, ET_Producer<WebSocketSession_Message>*> _session_input_producers;
 
 	class WebSocketMessageOutputForwarder : public ET_Consumer
@@ -140,9 +134,6 @@ protected:
 		string _session_id;
 		ET_Producer<WebSocketSession_Message>* _destination;
 	};
-
-	
-	//WebSocketMessageOutputForwarder* _webSocketMessageOutputForwarder = nullptr;
 
 	struct session_generic_resource
 	{
@@ -328,15 +319,18 @@ protected:
 		ET_Producer<WebSocketSession_Message>* inputProducer,
 		ET_Producer<WebSocketSession_Message>* outputProducer,
 		std::vector<ET_Generic_Producer*>* producers,
-		std::vector<ET_Consumer*>* consumers);
+		std::vector<ET_Consumer*>* consumers,
+		WebSocketSession_Message* subscriptionToken);
 
 	class Echo_Forwarder : public ET_Consumer
 	{
 	public:
-		Echo_Forwarder(ET_Generic_Producer* echoSource, ET_Producer<WebSocketSession_Message>* echoDestination) : ET_Consumer(echoSource), _echoDestination(echoDestination) {};
+		Echo_Forwarder(ET_Generic_Producer* echoSource, ET_Producer<WebSocketSession_Message>* echoDestination, string prepend) 
+			: ET_Consumer(echoSource), _echoDestination(echoDestination), _prepend(prepend){};
 		void OnReceive(WebSocketSession_Message message);
 	protected:
 		ET_Producer<WebSocketSession_Message>* _echoDestination;
+		string _prepend = "";
 	};
 };
 
@@ -351,7 +345,8 @@ protected:
 		ET_Producer<WebSocketSession_Message>* inputProducer,
 		ET_Producer<WebSocketSession_Message>* outputProducer,
 		std::vector<ET_Generic_Producer*>* producers,
-		std::vector<ET_Consumer*>* consumers);
+		std::vector<ET_Consumer*>* consumers,
+		WebSocketSession_Message* subscriptionToken);
 
 	class Screenshot_Taker : public ET_Consumer
 	{

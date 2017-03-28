@@ -653,7 +653,18 @@ ET_Producer<WebSocketSession_content>* WebSocket_Service::onNewSubscription(WebS
 	sgr.producers->push_back(outputSource);
 	sgr.consumers->push_back(outputForwarder);
 
-	onNewSession(inputDestination, outputSource, sgr.producers, sgr.consumers);
+	WebSocketSession_clientApplicationContent token = session->getSubscriptionToken(this);
+	WebSocketSession_Message* messageToken;
+	if(token.window_needed)
+	{
+		messageToken = new WebSocketSession_Message(session->get_sessionID(), token.content, token.length, token.hwnd, token.ancestor_hwnd);
+	}
+	else
+	{
+		messageToken = new WebSocketSession_Message(session->get_sessionID(), token.content, token.length);
+	}
+
+	onNewSession(inputDestination, outputSource, sgr.producers, sgr.consumers, messageToken);
 
 	_session_generic_resources.insert_or_assign(session, sgr);
 
@@ -726,8 +737,6 @@ void WebSocket_Service::WebSocketMessageOutputForwarder::OnReceive(WebSocketSess
 		string content = message.getContent();//chars_to_string(message.content, message.length);
 		string json = "{ \"content\": "+ content +", \"service\":\""+ _service_name +"\", \"type\": \"service_message\"}";
 		message.setContent(json);
-		//message.content = string_to_chars(json);
-		//message.length = json.length();
 		_destination->Emit(message);
 	}
 }
@@ -749,9 +758,21 @@ void Echo_Service::onNewSession(
 	ET_Producer<WebSocketSession_Message>* inputProducer, 
 	ET_Producer<WebSocketSession_Message>* outputProducer, 
 	std::vector<ET_Generic_Producer*>* producers, 
-	std::vector<ET_Consumer*>* consumers)
+	std::vector<ET_Consumer*>* consumers,
+	WebSocketSession_Message* subscriptionToken)
 {
-	Echo_Forwarder* echoForwarder = new Echo_Forwarder(inputProducer, outputProducer);
+	Document d;
+	d.Parse(subscriptionToken->content);
+	string prepend = "";
+	if (d.HasMember("prepend"))
+	{
+		if (d["prepend"].IsString())
+		{
+			prepend = d["prepend"].GetString();
+		}
+	}
+
+	Echo_Forwarder* echoForwarder = new Echo_Forwarder(inputProducer, outputProducer, prepend);
 	consumers->push_back(echoForwarder);
 }
 
@@ -759,6 +780,20 @@ void Echo_Service::Echo_Forwarder::OnReceive(WebSocketSession_Message message)
 {
 	//do something with the content...
 	cout << "Echo Forwarder received: " << message.content << endl;
+	cout << "prepending: " << _prepend << endl;
+
+	Document d;
+	d.Parse(message.content);
+	string content = "";
+	if (d.HasMember("content"))
+	{
+		if (d["content"].IsString())
+		{
+			content = d["content"].GetString();
+		}
+	}
+
+	message.setContent("\""+ _prepend + content +"\"");
 	_echoDestination->Emit(message);
 }
 
@@ -766,7 +801,8 @@ void Screenshot_Service::onNewSession(
 	ET_Producer<WebSocketSession_Message>* inputProducer, 
 	ET_Producer<WebSocketSession_Message>* outputProducer, 
 	std::vector<ET_Generic_Producer*>* producers, 
-	std::vector<ET_Consumer*>* consumers)
+	std::vector<ET_Consumer*>* consumers,
+	WebSocketSession_Message* subscriptionToken)
 {
 	Screenshot_Taker* screenshotTaker = new Screenshot_Taker(inputProducer, outputProducer);
 	consumers->push_back(screenshotTaker);
