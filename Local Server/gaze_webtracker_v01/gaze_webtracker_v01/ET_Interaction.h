@@ -293,18 +293,10 @@ public:
 	virtual void OnReceive(ET_Log content);
 };
 
-template <typename T> class ET_Consumer_Of : public ET_Consumer{
-public:
-	ET_Consumer_Of() {};
-	ET_Consumer_Of(ET_Producer<T>* source);
-	virtual void OnReceive(T content) {}
-	virtual void Attach(ET_Producer<T>* source);
-};
-
-class ET_Logger : public ET_Consumer_Of<ET_Log>
+class ET_Logger : public ET_Consumer
 {
 public:
-	ET_Logger(ET_Producer<ET_Log>* source) : ET_Consumer_Of<ET_Log>(source) {};
+	ET_Logger(ET_Producer<ET_Log>* source) : ET_Consumer(source) {};
 	virtual void OnReceive(ET_Log content);
 };
 
@@ -332,20 +324,6 @@ inline void ET_ThreadSafe_Producer<T>::RemoveAllDestinations()
 	_mutex.lock();
 	_destinations.clear();
 	_mutex.unlock();
-}
-
-template<typename T>
-inline ET_Consumer_Of<T>::ET_Consumer_Of(ET_Producer<T>* source)
-{
-	this->Attach(source);
-}
-
-template<typename T>
-inline void ET_Consumer_Of<T>::Attach(ET_Producer<T>* source)
-{
-	Detach();
-	_source = source;
-	source->AddDestination(this);
 }
 
 template<typename T>

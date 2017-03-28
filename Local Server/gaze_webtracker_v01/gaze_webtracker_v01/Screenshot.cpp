@@ -3,7 +3,7 @@
 #include "Windows_sensing.h"
 
 ScreenshotTaker::ScreenshotTaker(ET_Producer<ScreenshotRequest_content>* source, ET_Producer<ScreenshotMetadata_content>* screenshotMetadata_source)
-	: ET_Consumer_Of<ScreenshotRequest_content>(source)
+	: ET_Consumer(source)
 {
 	this->_screenshotMetadata_source = screenshotMetadata_source;
 }

@@ -8,7 +8,7 @@
 using namespace std;
 
 
-class ScreenshotTaker : public ET_Consumer_Of<ScreenshotRequest_content>
+class ScreenshotTaker : public ET_Consumer
 {
 public:
 	ScreenshotTaker(ET_Producer<ScreenshotRequest_content>* source, ET_Producer<ScreenshotMetadata_content>* screenshotMetadata_source = nullptr);

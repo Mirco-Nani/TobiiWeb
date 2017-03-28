@@ -16,7 +16,7 @@ WebSocketSession_clientApplicationContent invalid_SubscriptionToken();
 
 bool is_SubscriptionToken_Valid(WebSocketSession_clientApplicationContent token);
 
-class WebSocket_ServiceFrame_Consumer : public ET_Consumer_Of<WebSocketSession_content>
+class WebSocket_ServiceFrame_Consumer : public ET_Consumer
 {
 public:
 	virtual void OnReceive(WebSocketSession_content content);
@@ -153,11 +153,11 @@ protected:
 
 };
 
-class WindowInfo_to_WebSocketSession_contentTranslator : public ET_Consumer_Of<ET_WindowInfo_Content>
+class WindowInfo_to_WebSocketSession_contentTranslator : public ET_Consumer
 {
 public:
 	WindowInfo_to_WebSocketSession_contentTranslator(ET_Producer<ET_WindowInfo_Content>* source, ET_Producer<WebSocketSession_content>* producer) 
-		: _producer(producer), ET_Consumer_Of<ET_WindowInfo_Content>(source) {};
+		: _producer(producer), ET_Consumer(source) {};
 	virtual void OnReceive(ET_WindowInfo_Content content);
 
 	virtual void setProducer(ET_Producer<WebSocketSession_content>* producer);
