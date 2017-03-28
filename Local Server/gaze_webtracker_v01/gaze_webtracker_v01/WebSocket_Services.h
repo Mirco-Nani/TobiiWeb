@@ -4,8 +4,6 @@
 
 #include "TobiiEyeX_GlobalGazeTracker.h"
 #include "Windows_sensing.h"
-#include "Screenshot.h"
-#include "Persistence.h"
 
 #define FRAME_LENGHT 1024
 
@@ -208,67 +206,6 @@ public:
 	virtual void onSessionClosed(WebSocket_Session* session);
 protected:
 	virtual void stop_service();
-};
-
-
-class ScreenshotEvent_translator: public ET_Consumer
-{
-public:
-	ScreenshotEvent_translator(ET_Generic_Producer* producer, string sessionID) : ET_Consumer(producer), _sessionID(sessionID) {};
-	void set_ScreenshotRequest_producer(ET_Producer<ScreenshotRequest_content>* producer);
-	void OnReceive(WebSocketSession_clientApplicationContent content);
-private:
-	ET_Producer<ScreenshotRequest_content>* _producer = nullptr;
-	string _sessionID = "unknown";
-	int _screensCount = 0;
-};
-
-class ScreenshotMetadata_translator : public ET_Consumer
-{
-public:
-	ScreenshotMetadata_translator(ET_Generic_Producer* producer) : ET_Consumer(producer) {};
-	void setSessionID(string sessionID);
-	void setSubscriptionToken(string subscriptionToken);
-	void set_ScreenshotPersistence_producer(ET_Producer<SessionPersistence_Content>* producer);
-	void OnReceive(ScreenshotMetadata_content content);
-private:
-	ET_Producer<SessionPersistence_Content>* _producer = nullptr;
-	string _sessionID = "unknown";
-	string _subscriptionToken = "unknown";
-};
-
-class ScreenshotFile_Service : public WebSocket_Generic_Service
-{
-public:
-	virtual string getName() { return "ScreenshotFile_Service"; };
-	ScreenshotFile_Service();
-
-	virtual ET_Producer<WebSocketSession_content>* onNewSubscription(WebSocket_Session* session);
-	virtual void onSessionClosed(WebSocket_Session* session);
-protected:
-	virtual void stop_service();
-
-	struct session_stuff
-	{
-		string activation = "";
-		int activation_period = -1;
-		string activation_time = "now";
-		unsigned int hwnd;
-
-		ET_Producer<ScreenshotMetadata_content>* screenshot_metadata_producer = nullptr;
-		ET_Consumer* screenshot_metadata_consumer = nullptr;
-		Periodic_WindowScreenshotRequestor* periodic_screenshot_requestor = nullptr;
-		ET_Producer<ScreenshotRequest_content>* screenshot_requestor = nullptr;
-		ScreenshotTaker* screenshot_taker = nullptr;
-
-		ET_Producer<WebSocketSession_clientApplicationContent>* application_response_producer = nullptr;
-		ScreenshotEvent_translator* screenshot_event_translator = nullptr;
-
-		ET_Producer<SessionPersistence_Content>* session_persistance_producer = nullptr;
-		Datasetore_SessionPersister_Consumer* datastore_persister_consumer = nullptr;
-		string sessionID = "unknown";
-	};
-	map<WebSocket_Session*, session_stuff> _sessions_stuff;
 };
 
 class Echo_Service : public WebSocket_Service

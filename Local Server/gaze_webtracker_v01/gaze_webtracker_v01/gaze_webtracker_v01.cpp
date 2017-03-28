@@ -192,9 +192,6 @@ void test_serviceRegistration02()
 	WebSocket_Log_Service* log_service = new WebSocket_Log_Service();
 	server->RegisterService(log_service);
 
-	ScreenshotFile_Service* screenshot_service = new ScreenshotFile_Service();
-	server->RegisterService(screenshot_service);
-
 	server->start();
 
 	printf("Press any key to exit...\n");
