@@ -36,7 +36,6 @@
 #include "rapidjson/writer.h"
 #include "rapidjson/stringbuffer.h"
 
-#include "POCO_HttpClient.h"
 
 
 using namespace rapidjson;
@@ -84,22 +83,6 @@ string UniqueID_getter::get()
 	return to_string(_count++);
 }
 
-string UniqueID_HTTPgetter::get()
-{
-	string res = "";
-	POCO_HttpClient_response resp = POCO_HttpClient::GET_request(HTTP_ID_URI);
-	if (resp.state == "success")
-	{
-		res = resp.response;
-		res = res.substr(0, res.length() - 1);
-	}
-	else
-	{
-		throw "ID UNAVAILABLE";
-	}
-
-	return res;
-}
 
 
 

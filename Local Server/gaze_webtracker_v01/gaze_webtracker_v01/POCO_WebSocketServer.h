@@ -11,9 +11,6 @@ using Poco::Net::WebSocket;
 #define WEBSOCKET_SERVER_STANDARD_PORT 6675
 
 
-#define HTTP_ID_URI "http://localhost:8888/gaze_analytics?action=session_id"
-//#define HTTP_ID_URI "http://1-dot-mir-project.appspot.com/gaze_analytics?action=session_id"
-
 /* -------------------------- Session's Unique ID classes -------------------------- */
 class UniqueID_getter
 {
@@ -21,12 +18,6 @@ public:
 	virtual string get();
 private:
 	unsigned long _count = 0;
-};
-
-class UniqueID_HTTPgetter : public UniqueID_getter
-{
-public:
-	virtual string get();
 };
 
 class UniqueID

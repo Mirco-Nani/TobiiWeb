@@ -155,12 +155,8 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Persistence.h" />
-    <ClInclude Include="POCO_FtpClient.h" />
-    <ClInclude Include="POCO_HttpClient.h" />
     <ClInclude Include="POCO_WebSocketServer.h" />
     <ClInclude Include="ScreenImage.h" />
-    <ClInclude Include="Screenshot.h" />
     <ClInclude Include="WebSocket_Services.h" />
     <ClInclude Include="Windows_sensing.h" />
     <ClInclude Include="ET_Interaction.h" />
@@ -170,12 +166,8 @@
     <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Persistence.cpp" />
-    <ClCompile Include="POCO_FtpClient.cpp" />
-    <ClCompile Include="POCO_HttpClient.cpp" />
     <ClCompile Include="POCO_WebSocketServer.cpp" />
     <ClCompile Include="ScreenImage.cpp" />
-    <ClCompile Include="Screenshot.cpp" />
     <ClCompile Include="WebSocket_Services.cpp" />
     <ClCompile Include="Windows_sensing.cpp" />
     <ClCompile Include="ET_Interaction.cpp" />

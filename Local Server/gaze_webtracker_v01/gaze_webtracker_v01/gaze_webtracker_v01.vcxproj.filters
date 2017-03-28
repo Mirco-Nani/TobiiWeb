@@ -39,22 +39,10 @@
     <ClInclude Include="POCO_WebSocketServer.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="Screenshot.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
     <ClInclude Include="WebSocket_Services.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="ScreenImage.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="POCO_HttpClient.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="Persistence.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
-    <ClInclude Include="POCO_FtpClient.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>
@@ -80,22 +68,10 @@
     <ClCompile Include="POCO_WebSocketServer.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="Screenshot.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
     <ClCompile Include="WebSocket_Services.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="ScreenImage.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="POCO_HttpClient.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="Persistence.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="POCO_FtpClient.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>

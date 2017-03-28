@@ -5,10 +5,7 @@
 #include "Windows_sensing.h"
 #include "POCO_WebSocketServer.h"
 #include "Utils.h"
-#include "Screenshot.h"
 #include "WebSocket_Services.h"
-#include "POCO_HttpClient.h"
-#include "POCO_FtpClient.h"
 
 void test_POCO_WebSocketServer()
 {
@@ -205,91 +202,7 @@ void test_serviceRegistration02()
 	printf("Bye Bye.\n");
 }
 
-void test_periodic_screenshots()
-{
-	ET_Producer<ScreenshotMetadata_content>* screenshotMetadata_source = new ET_Producer<ScreenshotMetadata_content>();
-	ScreenshotMetadata_Logger* metadata_logger = new ScreenshotMetadata_Logger(screenshotMetadata_source);
 
-	unsigned int hwnd = GetHwndFrom::ScreenPoint(0, 0);
-
-	printf("%d\n", hwnd);
-
-	Periodic_WindowScreenshotRequestor* periodic_screenshot_taker = new Periodic_WindowScreenshotRequestor(hwnd,"test");
-	ET_Producer<ScreenshotRequest_content>* requester = periodic_screenshot_taker->getProducer();
-	ScreenshotTaker* screensTaker = new ScreenshotTaker(requester, screenshotMetadata_source);
-
-	periodic_screenshot_taker->start(2000);
-
-	printf("Press any key to exit...\n");
-	getchar();
-	printf("Exiting.\n");
-
-	periodic_screenshot_taker->stop();
-
-}
-
-void test_screenshots()
-{
-	ET_Producer<ScreenshotMetadata_content>* screenshotMetadata_source = new ET_Producer<ScreenshotMetadata_content>();
-	ScreenshotMetadata_Logger* metadata_logger = new ScreenshotMetadata_Logger(screenshotMetadata_source);
-
-	unsigned int hwnd = GetHwndFrom::ScreenPoint(0, 0);
-
-	printf("%d\n", hwnd);
-
-	//Periodic_WindowScreenshotRequestor* periodic_screenshot_taker = new Periodic_WindowScreenshotRequestor(hwnd, "test");
-	ET_Producer<ScreenshotRequest_content>* requester = new ET_Producer<ScreenshotRequest_content>();//periodic_screenshot_taker->getProducer();
-	ScreenshotTaker* screensTaker = new ScreenshotTaker(requester, screenshotMetadata_source);
-
-	requester->Emit(ScreenshotRequest_content(hwnd,"../media/test.bmp"));
-
-	printf("Press any key to exit...\n");
-	getchar();
-	printf("Exiting.\n");
-
-
-}
-
-void test_httpRequest()
-{
-	//SimpleHttpRequestTest();
-	//SimpleHttpRequestTest_POST();
-	//string response = POCO_HttpClient::POST_request("http://localhost:8888/simpleservlet2?username=user&pass=pass").response;
-	//string response = POCO_HttpClient::GET_request("http://localhost:8888/simpleservlet2?username=user&pass=pass").response;
-
-	
-
-	//string response = POCO_HttpClient::POST_request("http://1-dot-mir-project.appspot.com/gaze_analytics?username=user&pass=pass").response;
-
-	string response = POCO_HttpClient::GET_request("http://1-dot-mir-project.appspot.com/").response;
-
-	cout << response << endl;
-
-	printf("Press any key to exit...\n");
-	getchar();
-
-	printf("Exiting.\n");
-
-}
-
-void test_ftpUpload()
-{
-	POCO_FtpClient::test();
-
-	printf("Press any key to exit...\n");
-	getchar();
-	printf("Exiting.\n");
-}
-
-void test_HTTP_UNIQUE_ID()
-{
-	UniqueID::Init(new UniqueID_HTTPgetter());
-	cout << UniqueID::get() << endl;
-
-	printf("Press any key to exit...\n");
-	getchar();
-	printf("Exiting.\n");
-}
 
 void test_serviceRegistration03() {
 	POCO_WebSocketServer* server = POCO_WebSocketServer::Instance();
