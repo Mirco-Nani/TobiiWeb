@@ -192,10 +192,6 @@ void test_serviceRegistration02()
 	WebSocket_Log_Service* log_service = new WebSocket_Log_Service();
 	server->RegisterService(log_service);
 
-
-	WebSocket_ClientData_Service* clientData_service = new WebSocket_ClientData_Service();
-	server->RegisterService(clientData_service);
-
 	ScreenshotFile_Service* screenshot_service = new ScreenshotFile_Service();
 	server->RegisterService(screenshot_service);
 

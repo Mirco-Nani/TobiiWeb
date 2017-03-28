@@ -210,44 +210,6 @@ protected:
 	virtual void stop_service();
 };
 
-class ClientApplicationContent_translator : public ET_Consumer
-{
-public:
-	ClientApplicationContent_translator(ET_Generic_Producer* producer) : ET_Consumer(producer) {};
-	void setSessionID(string sessionID);
-	void setSubscriptionToken(WebSocketSession_clientApplicationContent subscriptionToken);
-	void set_SessionPersistence_producer(ET_Producer<SessionPersistence_Content>* producer);
-	void OnReceive(WebSocketSession_clientApplicationContent content);
-private:
-	ET_Producer<SessionPersistence_Content>* _producer = nullptr;
-	string _sessionID = "unknown";
-	string _subscriptionTokenContent = "unknown";
-};
-
-
-class WebSocket_ClientData_Service : public WebSocket_Generic_Service
-{
-public:
-	virtual string getName() { return "ClientData_Service"; };
-	WebSocket_ClientData_Service() {};
-
-	virtual ET_Producer<WebSocketSession_content>* onNewSubscription(WebSocket_Session* session);
-	virtual void onSessionClosed(WebSocket_Session* session);
-protected:
-	virtual void stop_service();
-	
-	struct session_stuff
-	{
-		string sessionID = "unknown";
-
-		ET_Producer<WebSocketSession_clientApplicationContent>* client_application_content_producer = nullptr;
-		ClientApplicationContent_translator* application_content_translator = nullptr;
-		ET_Producer<SessionPersistence_Content>* session_persistance_producer = nullptr;
-		Datasetore_SessionPersister_Consumer* datastore_persistence_consumer = nullptr;
-	};
-	map<WebSocket_Session*, session_stuff> _sessions_stuff;
-
-};
 
 class ScreenshotEvent_translator: public ET_Consumer
 {
