@@ -35,11 +35,6 @@ WebSocket_GazeTracking_Service::WebSocket_GazeTracking_Service(int log_level)
 	}
 	if (_logLevel >= 2)
 	{
-		/*
-		_coordinatesLogger = new ET_Consumer(_coordinatesSource);
-		_windowInfoDestination = new ET_Consumer(_windowInfoSource);
-		*/
-		
 		_coordinatesLogger = new ET_Logger(_coordinatesSource);
 		_windowInfoDestination = new ET_Logger(_windowInfoSource);
 	}
@@ -48,12 +43,7 @@ ET_Producer<WebSocketSession_content>* WebSocket_GazeTracking_Service::onNewSubs
 {
 	return _websocket_producer;
 }
-/*
-ET_Producer<WebSocketSession_content>* WebSocket_GazeTracking_Service::get_WebSocketSessionContent_Producer()
-{
-	return _websocket_producer;
-}
-*/
+
 void WebSocket_GazeTracking_Service::start_service()
 {
 	_gazeTracker->start(TX_GAZEPOINTDATAMODE_LIGHTLYFILTERED);
