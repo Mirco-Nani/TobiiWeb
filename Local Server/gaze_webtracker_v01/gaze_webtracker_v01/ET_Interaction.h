@@ -227,17 +227,15 @@ public:
 	virtual void Attach(ET_Generic_Producer *source);
 	virtual void Detach();
 
-	virtual void OnReceive(ET_Content content);// { UnhandledTypeError("ET_Content"); };
-	virtual void OnReceive(ET_GazeCoordinates_Content content);// { UnhandledTypeError("ET_GazeCoordinates_Content"); };
-	virtual void OnReceive(ET_WindowInfo_Content content);// { UnhandledTypeError("ET_WindowInfo_Content"); };
-	virtual void OnReceive(ET_Log content);// { UnhandledTypeError("ET_Log"); };
-	virtual void OnReceive(ET_JSON_Content) {};// { UnhandledTypeError("ET_JSON_Content"); };
-	virtual void OnReceive(WebSocketSession_content content) {};// { UnhandledTypeError("WebSocketSession_content"); };
-	virtual void OnReceive(WebSocketSession_clientApplicationContent content) {};// { UnhandledTypeError("WebSocketSession_clientApplicationContent"); };
-	virtual void OnReceive(WebSocketSession_Message content) {};// { UnhandledTypeError("WebSocketSession_Message"); };
+	virtual void OnReceive(ET_Content content){ UnhandledTypeError("ET_Content"); };
+	virtual void OnReceive(ET_GazeCoordinates_Content content){ UnhandledTypeError("ET_GazeCoordinates_Content"); };
+	virtual void OnReceive(ET_WindowInfo_Content content) { UnhandledTypeError("ET_WindowInfo_Content"); };
+	virtual void OnReceive(ET_Log content) { UnhandledTypeError("ET_Log"); };
+	virtual void OnReceive(ET_JSON_Content) { UnhandledTypeError("ET_JSON_Content"); };
+	virtual void OnReceive(WebSocketSession_content content) { UnhandledTypeError("WebSocketSession_content"); };
+	virtual void OnReceive(WebSocketSession_clientApplicationContent content) { UnhandledTypeError("WebSocketSession_clientApplicationContent"); };
+	virtual void OnReceive(WebSocketSession_Message content) { UnhandledTypeError("WebSocketSession_Message"); };
 	
-	//ScreenshotRequest_content
-
 	int getPosition();
 	void setPosition(int pos);
 
@@ -252,8 +250,10 @@ private:
 class ET_Logger : public ET_Consumer
 {
 public:
-	ET_Logger(ET_Producer<ET_Log>* source) : ET_Consumer(source) {};
+	ET_Logger(ET_Generic_Producer* source) : ET_Consumer(source) {};
 	virtual void OnReceive(ET_Log content);
+	virtual void OnReceive(ET_GazeCoordinates_Content content);
+	virtual void OnReceive(ET_WindowInfo_Content content);
 };
 
 

@@ -42,7 +42,7 @@ void test_TobiiEyeX_GlobalGazeTracker()
 	//POCO_WebSocket_Application_Response_Logger* app_response_logger = new POCO_WebSocket_Application_Response_Logger(webSocket_applicationResponse_source);
 
 	ET_Producer<ET_Log>* webSocketServer_logSource = new ET_Producer<ET_Log>();
-	ET_Consumer* webSocketServer_logDestination = new ET_Consumer(webSocketServer_logSource);
+	ET_Logger* webSocketServer_logDestination = new ET_Logger(webSocketServer_logSource);
 	
 
 	POCO_WebSocketServer* webSocketServer = POCO_WebSocketServer::Instance();
@@ -151,7 +151,7 @@ void test_serviceRegistration()
 	POCO_WebSocketServer* server = POCO_WebSocketServer::Instance();
 
 	ET_Producer<ET_Log>* webSocketServer_logSource = new ET_Producer<ET_Log>();
-	ET_Consumer* webSocketServer_logDestination = new ET_Consumer(webSocketServer_logSource);
+	ET_Logger* webSocketServer_logDestination = new ET_Logger(webSocketServer_logSource);
 
 	server->Init(webSocketServer_logSource);
 
@@ -179,7 +179,7 @@ void test_serviceRegistration02()
 	POCO_WebSocketServer* server = POCO_WebSocketServer::Instance();
 
 	ET_Producer<ET_Log>* webSocketServer_logSource = new ET_Producer<ET_Log>();
-	ET_Consumer* webSocketServer_logDestination = new ET_Consumer(webSocketServer_logSource);
+	ET_Logger* webSocketServer_logDestination = new ET_Logger(webSocketServer_logSource);
 
 	server->Init(webSocketServer_logSource);
 
@@ -208,7 +208,7 @@ void test_serviceRegistration03() {
 	POCO_WebSocketServer* server = POCO_WebSocketServer::Instance();
 
 	ET_Producer<ET_Log>* webSocketServer_logSource = new ET_Producer<ET_Log>();
-	ET_Consumer* webSocketServer_logDestination = new ET_Consumer(webSocketServer_logSource);
+	ET_Logger* webSocketServer_logDestination = new ET_Logger(webSocketServer_logSource);
 
 	server->Init(webSocketServer_logSource);
 

@@ -181,8 +181,8 @@ protected:
 	ET_Logger* _eyeX_logDestination;
 
 	// log level 2
-	ET_Consumer* _coordinatesLogger;
-	ET_Consumer* _windowInfoDestination;
+	ET_Logger* _coordinatesLogger;
+	ET_Logger* _windowInfoDestination;
 };
 
 

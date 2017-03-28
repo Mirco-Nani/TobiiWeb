@@ -35,8 +35,13 @@ WebSocket_GazeTracking_Service::WebSocket_GazeTracking_Service(int log_level)
 	}
 	if (_logLevel >= 2)
 	{
+		/*
 		_coordinatesLogger = new ET_Consumer(_coordinatesSource);
 		_windowInfoDestination = new ET_Consumer(_windowInfoSource);
+		*/
+		
+		_coordinatesLogger = new ET_Logger(_coordinatesSource);
+		_windowInfoDestination = new ET_Logger(_windowInfoSource);
 	}
 }
 ET_Producer<WebSocketSession_content>* WebSocket_GazeTracking_Service::onNewSubscription(WebSocket_Session* session)
