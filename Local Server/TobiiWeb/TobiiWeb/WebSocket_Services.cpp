@@ -463,7 +463,7 @@ void Screenshot_Service::Screenshot_Taker::OnReceive(WebSocketSession_Message me
 			string command = d["command"].GetString();
 			if (command == "take_screenshot")
 			{
-				string tempImgFilePath = "../media/" + _tempImgFileName + message.session_id + ".jpg";
+				string tempImgFilePath = "./" + _tempImgFileName + message.session_id + ".jpg";
 				screenshotPrinter->TakeScreenshotOfWindow(message.hwnd, tempImgFilePath);
 				string base64Img = File_to_Base64(tempImgFilePath);
 				remove(tempImgFilePath.c_str());

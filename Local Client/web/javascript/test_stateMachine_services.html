@@ -35,7 +35,7 @@
             GTTS_Client.start({
                 enable_state_machine_logs : true, 
                 use_filter : "mean", 
-                respond_to_server : true,
+                //respond_to_server : true,
                 services : [
                     {name : "GazeTracking_Service", page_url : window.location.href},
                     {name : "Log_Service"},
@@ -53,6 +53,14 @@
                     */
                 ],
                 onMessage : {
+                    /*
+                    "GazeTracking_Service" : GazeCoordinatesReceiver({
+                        filter: "mean",
+                        filter_size; 5,
+                        onGazeCoordinates: function(x,y){
+
+                        }
+                    }),*/
                     "Echo_Service" : function(message){
                         console.log("received: ");
                         console.log(message)

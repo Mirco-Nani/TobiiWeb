@@ -1,4 +1,16 @@
 
+var GazeCoordinatesReceiver = function(params){
+    if(params.filter == undefined){
+        params.filter = "mean";
+    }
+    if(params.filter_size == undefined){
+        params.filter_size = 5;
+    }
+    if(params.onGazeCoordinates == undefined){
+        params.onGazeCoordinates = function(x,y){}
+    }
+}
+
 var GTTS_Client = {
     params : {
         enable_state_machine_logs : false,
@@ -7,7 +19,7 @@ var GTTS_Client = {
         websocket_address : "ws://127.0.0.1:6675/ws",
         use_filter : "none",
         filter_size : 5,
-        respond_to_server : true,
+        respond_to_server : false,
         services : [
             {name : "GazeTracking_Service"}
         ],
