@@ -101,21 +101,6 @@ void ET_Consumer::UnhandledTypeError(string type)
 	throw "unhandled " + type + " subclass. please add the following signature:\n virtual void OnReceive(<YourSubclass> content);\n to class ET_Consumer located in ET_Interaction.h";
 }
 
-
-ET_Alternate_Consumer::ET_Alternate_Consumer(ET_Generic_Producer* source) : ET_Consumer(source)
-{
-}
-
-void ET_Alternate_Consumer::OnReceive(ET_GazeCoordinates_Content content)
-{
-	printf("I have received (%.1f,%.1f) at timestamp %.0f\n", content.global_gaze_x, content.global_gaze_y, content.global_gaze_timestamp);
-}
-
-void ET_Alternate_Consumer::OnReceive(ET_Log content)
-{
-	std::cout << "LOG: " << content.log << std::endl;
-}
-
 void ET_Logger::OnReceive(ET_Log content)
 {
 	cout << content.log << endl;

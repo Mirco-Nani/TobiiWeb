@@ -144,38 +144,6 @@ struct WebSocketSession_Message : WebSocketSession_content
 	}
 };
 
-struct ScreenshotRequest_content : ET_Content
-{
-	unsigned long hwnd;
-	string location_path;
-
-	ScreenshotRequest_content() {};
-	ScreenshotRequest_content(
-		unsigned long param_hwnd,
-		string param_location_path
-		) : hwnd(param_hwnd), location_path(param_location_path) {};
-
-};
-
-struct SessionPersistence_Content : ET_Content
-{
-	string session_id;
-	string JSON_content;
-
-	SessionPersistence_Content(string param_id, string param_JSON)
-		: session_id(param_id), JSON_content(param_JSON) {};
-};
-
-struct ScreenshotMetadata_content : ET_Content
-{
-	string location_path;
-	double timestamp;
-
-	ScreenshotMetadata_content() {};
-	ScreenshotMetadata_content(string param_path, double param_timestamp)
-		: location_path(param_path), timestamp(param_timestamp)
-	{};
-};
 
 class ET_Generic_Producer
 {
@@ -267,9 +235,6 @@ public:
 	virtual void OnReceive(WebSocketSession_content content) {};// { UnhandledTypeError("WebSocketSession_content"); };
 	virtual void OnReceive(WebSocketSession_clientApplicationContent content) {};// { UnhandledTypeError("WebSocketSession_clientApplicationContent"); };
 	virtual void OnReceive(WebSocketSession_Message content) {};// { UnhandledTypeError("WebSocketSession_Message"); };
-	virtual void OnReceive(ScreenshotRequest_content content) {};// { UnhandledTypeError("ScreenshotRequest_content"); };
-	virtual void OnReceive(ScreenshotMetadata_content content) {};// { UnhandledTypeError("ScreenshotMetadata_content"); };
-	virtual void OnReceive(SessionPersistence_Content content) {};// { UnhandledTypeError("SessionPersistence_Content"); };
 	
 	//ScreenshotRequest_content
 
@@ -282,15 +247,6 @@ protected:
 
 private:
 	void UnhandledTypeError(string type);
-};
-
-
-class ET_Alternate_Consumer : public ET_Consumer
-{
-public:
-	ET_Alternate_Consumer(ET_Generic_Producer *source);
-	virtual void OnReceive(ET_GazeCoordinates_Content content);
-	virtual void OnReceive(ET_Log content);
 };
 
 class ET_Logger : public ET_Consumer
