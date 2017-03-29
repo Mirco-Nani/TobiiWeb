@@ -65,7 +65,7 @@ var GazeCoordinatesReceiver = function(params){
             
             var coords = {x : param_x, y : param_y};
             this.filters.fixedSized_queue.enqueue(coords);
-            if(GTTS_Client.params.use_filter == GTTS_Filters.mean)
+            if(TobiiWeb_Client.params.use_filter == TobiiWeb_Filters.mean)
             {
                 return this.filters.mean_filter();
             }
@@ -97,7 +97,7 @@ var GazeCoordinatesReceiver = function(params){
             tracked_values.document_relative_filtered_y = tracked_values.filtered_y + Mir_windowTools.get_scroll_offset().vertical;
             
             /*
-            tracked_values.user_created_data = GTTS_Client.onGazeCoordinates( 
+            tracked_values.user_created_data = TobiiWeb_Client.onGazeCoordinates( 
                 tracked_values.filtered_x,
                 tracked_values.filtered_y
 
@@ -110,7 +110,7 @@ var GazeCoordinatesReceiver = function(params){
     return coordinates_handler.process_coordinates;
 }
 
-var GTTS_Client = {
+var TobiiWeb_Client = {
     params : {
         enable_state_machine_logs : false,
         connection_delay : 1000,
@@ -152,12 +152,12 @@ var GTTS_Client = {
     
 }
 
-var GTTS_Filters = {
+var TobiiWeb_Filters = {
     none : "none",
     mean : "mean"
 }
 
-var GTTS_coordinates_handler = {
+var TobiiWeb_coordinates_handler = {
     
     filters : {
         fixedSized_queue : {
@@ -166,7 +166,7 @@ var GTTS_coordinates_handler = {
             {
                 this.queue.push(content);
 
-                if(this.queue.length > GTTS_Client.params.filter_size)
+                if(this.queue.length > TobiiWeb_Client.params.filter_size)
                 {
                     return this.queue.shift();
                 }    
@@ -202,14 +202,14 @@ var GTTS_coordinates_handler = {
     },
     apply_filter : function(param_x,param_y)
     {
-        if(GTTS_Client.params.use_filter == GTTS_Filters.none)
+        if(TobiiWeb_Client.params.use_filter == TobiiWeb_Filters.none)
         {
             return {x : param_x, y : param_y}
         }
         
         var coords = {x : param_x, y : param_y};
         this.filters.fixedSized_queue.enqueue(coords);
-        if(GTTS_Client.params.use_filter == GTTS_Filters.mean)
+        if(TobiiWeb_Client.params.use_filter == TobiiWeb_Filters.mean)
         {
             return this.filters.mean_filter();
         }
@@ -231,7 +231,7 @@ var GTTS_coordinates_handler = {
             
             timestamp : coords.timestamp
         }
-        tracked_values.client_side_applied_filter = GTTS_Client.params.use_filter;
+        tracked_values.client_side_applied_filter = TobiiWeb_Client.params.use_filter;
         
         filtered_coords = this.apply_filter(coords.x,coords.y);
         tracked_values.filtered_x=filtered_coords.x;
@@ -240,13 +240,13 @@ var GTTS_coordinates_handler = {
         tracked_values.document_relative_filtered_x = tracked_values.filtered_x + Mir_windowTools.get_scroll_offset().horizontal;
         tracked_values.document_relative_filtered_y = tracked_values.filtered_y + Mir_windowTools.get_scroll_offset().vertical;
         
-        tracked_values.user_created_data = GTTS_Client.onGazeCoordinates( 
+        tracked_values.user_created_data = TobiiWeb_Client.onGazeCoordinates( 
             tracked_values.filtered_x,
             tracked_values.filtered_y
 
         );
         
-        if(GTTS_Client.params.respond_to_server)
+        if(TobiiWeb_Client.params.respond_to_server)
         {
             this.sendClientResponse_toClientDataService(tracked_values);
         }
@@ -254,7 +254,7 @@ var GTTS_coordinates_handler = {
     
 }
 
-var GTTS_webSocket = {
+var TobiiWeb_webSocket = {
     
     flags : {
         //system_initialized : false,
@@ -269,7 +269,7 @@ var GTTS_webSocket = {
         {
             this.close_webSocket();
         }
-        this.webSocket = new WebSocket(GTTS_Client.params.websocket_address);
+        this.webSocket = new WebSocket(TobiiWeb_Client.params.websocket_address);
         this.webSocket.onopen = this.webSocket_callbacks.onopen;
         this.webSocket.onmessage = this.webSocket_callbacks.onmessage;
         this.webSocket.onclose = this.webSocket_callbacks.onclose;
@@ -314,7 +314,7 @@ var GTTS_webSocket = {
         {
             var toSend = {
                 type : "web_page_authentication_successful",
-                services : GTTS_Client.params.services
+                services : TobiiWeb_Client.params.services
             }
             this.webSocket.send(JSON.stringify(toSend));
         }
@@ -340,7 +340,7 @@ var GTTS_webSocket = {
     },
     send_client_response_to_service: function(response, service_name)
     {
-        if(!GTTS_Client.service_requested(service_name))
+        if(!TobiiWeb_Client.service_requested(service_name))
         {
             return;
         }
@@ -355,7 +355,7 @@ var GTTS_webSocket = {
     
 }
 
-var GTTS_StateMachine = {
+var TobiiWeb_StateMachine = {
     get_current_state_name : function(){
         if(this.current_state)
         {    
@@ -369,7 +369,7 @@ var GTTS_StateMachine = {
     
     log : function(toLog)
     {
-        if(GTTS_Client.params.enable_state_machine_logs)
+        if(TobiiWeb_Client.params.enable_state_machine_logs)
         {
             console.log(toLog);
         }
@@ -463,7 +463,7 @@ var GTTS_StateMachine = {
             this.name = "trying_to_connect";
             this.behaviour = function() //pending events are cleared by the state machine before executing behaviour
             {
-                state_machine.send_event_after("enstablish_connection",GTTS_Client.params.connection_delay);
+                state_machine.send_event_after("enstablish_connection",TobiiWeb_Client.params.connection_delay);
             };
             this.onEvent = function(event) //pending events are cleared by the state machine when an event arrives
             {
@@ -495,7 +495,7 @@ var GTTS_StateMachine = {
             this.name = "connecting";
             this.behaviour = function()
             {
-                GTTS_webSocket.open_webSocket();
+                TobiiWeb_webSocket.open_webSocket();
             };
             this.onEvent = function(event)
             {
@@ -551,7 +551,7 @@ var GTTS_StateMachine = {
             this.name = "trying_to_authenticate";
             this.behaviour = function()
             {
-                state_machine.send_event_after("authenticate",GTTS_Client.params.authentication_delay);
+                state_machine.send_event_after("authenticate",TobiiWeb_Client.params.authentication_delay);
             };
             this.onEvent = function(event)
             {
@@ -582,13 +582,13 @@ var GTTS_StateMachine = {
             this.name = "authenticating";
             this.behaviour = function()
             {
-                if(!GTTS_webSocket.flags.window_is_active)
+                if(!TobiiWeb_webSocket.flags.window_is_active)
                 {
                     state_machine.sendEvent("window_inactive");
                 }
                 else
                 {
-                    GTTS_webSocket.send_authentication_request();
+                    TobiiWeb_webSocket.send_authentication_request();
                 }
                 
             };
@@ -620,12 +620,12 @@ var GTTS_StateMachine = {
             }
         },
         authentication_failed : function(state_machine) //the window is not active:
-        //here, an authentication failure message is sent to GTTS_server,
+        //here, an authentication failure message is sent to TobiiWeb_server,
         {
             this.name = "authentication_failed";
             this.behaviour = function()
             {
-                GTTS_webSocket.send_authentication_failed();
+                TobiiWeb_webSocket.send_authentication_failed();
                 state_machine.sendEvent("authentication_failed_sent");
             };
             this.onEvent = function(event)
@@ -683,7 +683,7 @@ var GTTS_StateMachine = {
             this.name = "authenticated";
             this.behaviour = function()
             {
-                GTTS_webSocket.send_authentication_successful();
+                TobiiWeb_webSocket.send_authentication_successful();
                 state_machine.sendEvent("authentication_successful_sent")
             };
             this.onEvent = function(event)
@@ -711,7 +711,7 @@ var GTTS_StateMachine = {
             this.name = "session_is_open";
             this.behaviour = function()
             {
-                GTTS_webSocket.flags.session_is_open = true;
+                TobiiWeb_webSocket.flags.session_is_open = true;
             };
             this.onEvent = function(event)
             {
@@ -740,7 +740,7 @@ var GTTS_StateMachine = {
             this.name = "session_failed";
             this.behaviour = function()
             {
-                GTTS_webSocket.send_session_failed();
+                TobiiWeb_webSocket.send_session_failed();
             };
             this.onEvent = function(event)
             {
@@ -768,7 +768,7 @@ var GTTS_StateMachine = {
             this.name = "disconnecting";
             this.behaviour = function()
             {
-                GTTS_webSocket.close_webSocket();
+                TobiiWeb_webSocket.close_webSocket();
             };
             this.onEvent = function(event)
             {
@@ -785,35 +785,33 @@ var GTTS_StateMachine = {
         }
     }
 }
-GTTS_StateMachine.init();
+TobiiWeb_StateMachine.init();
 
-GTTS_coordinates_handler.sendClientResponse = function(json_response)
+TobiiWeb_coordinates_handler.sendClientResponse = function(json_response)
 {
-    if(GTTS_StateMachine.get_current_state_name()=="session_is_open")
+    if(TobiiWeb_StateMachine.get_current_state_name()=="session_is_open")
     {
-        GTTS_webSocket.send_client_response(json_response);
+        TobiiWeb_webSocket.send_client_response(json_response);
     }
 }
-GTTS_coordinates_handler.sendClientResponse_toLogService = function(json_response)
+TobiiWeb_coordinates_handler.sendClientResponse_toLogService = function(json_response)
 {
-    if(GTTS_StateMachine.get_current_state_name()=="session_is_open")
+    if(TobiiWeb_StateMachine.get_current_state_name()=="session_is_open")
     {
     }
 }
-GTTS_coordinates_handler.sendClientResponse_toClientDataService = function(json_response)
+TobiiWeb_coordinates_handler.sendClientResponse_toClientDataService = function(json_response)
 {
-    if(GTTS_StateMachine.get_current_state_name()=="session_is_open")
+    if(TobiiWeb_StateMachine.get_current_state_name()=="session_is_open")
     {
-        GTTS_webSocket.send_client_response_to_service(json_response,"ClientData_Service");
+        TobiiWeb_webSocket.send_client_response_to_service(json_response,"ClientData_Service");
     }
 }
 
-//send_client_response_to_service
-
-GTTS_webSocket.webSocket_callbacks = {
+TobiiWeb_webSocket.webSocket_callbacks = {
     onopen : function()
     {
-        GTTS_StateMachine.sendEvent({type : "connected"});
+        TobiiWeb_StateMachine.sendEvent({type : "connected"});
     },
     onmessage : function(e)
     {
@@ -824,58 +822,58 @@ GTTS_webSocket.webSocket_callbacks = {
         content = JSON.parse(msg);
         if(content.type=="web_page_authentication_done")
         {
-            GTTS_StateMachine.sendEvent({type : "authenticated"});
+            TobiiWeb_StateMachine.sendEvent({type : "authenticated"});
         }
         else if(content.type=="web_page_authentication_failed")
         {
-            GTTS_StateMachine.sendEvent({type : "authentication_failed_received"});
+            TobiiWeb_StateMachine.sendEvent({type : "authentication_failed_received"});
         }  
         else if(content.type=="gaze_coordinates")
         {
-            if( GTTS_Client.params.onMessage["GazeTracking_Service"] == undefined){
-                GTTS_coordinates_handler.process_coordinates(content);
+            if( TobiiWeb_Client.params.onMessage["GazeTracking_Service"] == undefined){
+                TobiiWeb_coordinates_handler.process_coordinates(content);
                 console.log(content)
             }else{
-                GTTS_Client.params.onMessage["GazeTracking_Service"](content)
+                TobiiWeb_Client.params.onMessage["GazeTracking_Service"](content)
             }
             
         }
         else if(content.type=="service_message")
         {
-            GTTS_Client.params.onMessage[content.service](content.content)
+            TobiiWeb_Client.params.onMessage[content.service](content.content)
         }
     },
     onclose : function()
     {
-        GTTS_StateMachine.sendEvent({type : "disconnected"});
+        TobiiWeb_StateMachine.sendEvent({type : "disconnected"});
     }
 }
 
 window.onbeforeunload = function(event)
 //THIS IS SOOOO IMPORTANT! without it, server throws an exception on refresh page if a socket connection is open!
 {
-    GTTS_StateMachine.sendEvent({type : "closing"});
+    TobiiWeb_StateMachine.sendEvent({type : "closing"});
 };
 window.onfocus = function () 
 { 
-    GTTS_webSocket.flags.window_is_active = true;
-    GTTS_StateMachine.sendEvent({type : "window_active"});
+    TobiiWeb_webSocket.flags.window_is_active = true;
+    TobiiWeb_StateMachine.sendEvent({type : "window_active"});
 }; 
 window.onblur = function () 
 { 
-    GTTS_webSocket.flags.window_is_active = false;
-    GTTS_StateMachine.sendEvent({type : "window_inactive"});
+    TobiiWeb_webSocket.flags.window_is_active = false;
+    TobiiWeb_StateMachine.sendEvent({type : "window_inactive"});
 }; 
-GTTS_window_visibility = {};
-GTTS_window_visibility.on_window_hidden = function()
+TobiiWeb_window_visibility = {};
+TobiiWeb_window_visibility.on_window_hidden = function()
 {
-    GTTS_StateMachine.sendEvent({type : "window_hidden"});
+    TobiiWeb_StateMachine.sendEvent({type : "window_hidden"});
 }
-GTTS_window_visibility.on_window_visible= function()
+TobiiWeb_window_visibility.on_window_visible= function()
 {
-    GTTS_StateMachine.sendEvent({type : "window_visible"});
+    TobiiWeb_StateMachine.sendEvent({type : "window_visible"});
 }
-GTTS_window_visibility.set_window_visibility_checks=function() {
+TobiiWeb_window_visibility.set_window_visibility_checks=function() {
     
     var hidden = "hidden";
 
@@ -912,8 +910,8 @@ GTTS_window_visibility.set_window_visibility_checks=function() {
             result = this[hidden] ? "hidden" : "visible";
 
         //CUSTOM
-        if(result == "hidden") GTTS_window_visibility.on_window_hidden();
-        if(result == "visible") GTTS_window_visibility.on_window_visible();
+        if(result == "hidden") TobiiWeb_window_visibility.on_window_hidden();
+        if(result == "visible") TobiiWeb_window_visibility.on_window_visible();
     
     }
 
@@ -923,60 +921,60 @@ GTTS_window_visibility.set_window_visibility_checks=function() {
 
 
 }
-GTTS_window_visibility.set_window_visibility_checks();
+TobiiWeb_window_visibility.set_window_visibility_checks();
 
-GTTS_Client.start = function(opts)
+TobiiWeb_Client.start = function(opts)
 {
     this.update_params(opts);
 
-    GTTS_StateMachine.sendEvent({type : "connect"});
+    TobiiWeb_StateMachine.sendEvent({type : "connect"});
 }
-GTTS_Client.stop = function()
+TobiiWeb_Client.stop = function()
 {
-    GTTS_StateMachine.sendEvent({type : "disconnect"});
+    TobiiWeb_StateMachine.sendEvent({type : "disconnect"});
 }
 
-GTTS_Client.send_message = function(service, message){
-    if(GTTS_StateMachine.get_current_state_name()=="session_is_open")
+TobiiWeb_Client.send_message = function(service, message){
+    if(TobiiWeb_StateMachine.get_current_state_name()=="session_is_open")
     {
-        GTTS_webSocket.send_client_response_to_service(message, service);
+        TobiiWeb_webSocket.send_client_response_to_service(message, service);
     }
 }
 
-GTTS_Client.test_sendLog = function()
+TobiiWeb_Client.test_sendLog = function()
 {
-    if(GTTS_StateMachine.get_current_state_name()=="session_is_open")
+    if(TobiiWeb_StateMachine.get_current_state_name()=="session_is_open")
     {
-        GTTS_webSocket.send_client_response_to_service({content:"log!"}, "Log_Service");
+        TobiiWeb_webSocket.send_client_response_to_service({content:"log!"}, "Log_Service");
     }
     
 }
-GTTS_Client.send_screenshot_request = function()
+TobiiWeb_Client.send_screenshot_request = function()
 {
-    if(GTTS_StateMachine.get_current_state_name()=="session_is_open")
+    if(TobiiWeb_StateMachine.get_current_state_name()=="session_is_open")
     {
-        GTTS_webSocket.send_client_response_to_service({event:"take_screenshot"}, "Screenshot_Service");
+        TobiiWeb_webSocket.send_client_response_to_service({event:"take_screenshot"}, "Screenshot_Service");
     }
     
 }
-GTTS_Client.send_client_data = function(client_data)
+TobiiWeb_Client.send_client_data = function(client_data)
 {
-    if(GTTS_StateMachine.get_current_state_name()=="session_is_open")
+    if(TobiiWeb_StateMachine.get_current_state_name()=="session_is_open")
     {
-        GTTS_webSocket.send_client_response_to_service(client_data, "ClientData_Service");
+        TobiiWeb_webSocket.send_client_response_to_service(client_data, "ClientData_Service");
     }   
 }
 
-GTTS_Client.test_echo = function(msg){
-    if(GTTS_StateMachine.get_current_state_name()=="session_is_open")
+TobiiWeb_Client.test_echo = function(msg){
+    if(TobiiWeb_StateMachine.get_current_state_name()=="session_is_open")
     {
-        GTTS_webSocket.send_client_response_to_service(msg, "Echo_Service");
+        TobiiWeb_webSocket.send_client_response_to_service(msg, "Echo_Service");
     }  
 }
 
-GTTS_Client.test_screenshot = function(){
-    if(GTTS_StateMachine.get_current_state_name()=="session_is_open")
+TobiiWeb_Client.test_screenshot = function(){
+    if(TobiiWeb_StateMachine.get_current_state_name()=="session_is_open")
     {
-        GTTS_webSocket.send_client_response_to_service({command:"take_screenshot"}, "Screenshot_Service");
+        TobiiWeb_webSocket.send_client_response_to_service({command:"take_screenshot"}, "Screenshot_Service");
     }  
 }
