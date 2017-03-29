@@ -157,6 +157,10 @@
   <ItemGroup>
     <ClInclude Include="POCO_WebSocketServer.h" />
     <ClInclude Include="ScreenImage.h" />
+    <ClInclude Include="WebSocketService_Echo.h" />
+    <ClInclude Include="WebSocketService_GazeTracking.h" />
+    <ClInclude Include="WebSocketService_Log.h" />
+    <ClInclude Include="WebSocketService_Screenshot.h" />
     <ClInclude Include="WebSocket_Services.h" />
     <ClInclude Include="Windows_sensing.h" />
     <ClInclude Include="ET_Interaction.h" />
@@ -168,6 +172,10 @@
   <ItemGroup>
     <ClCompile Include="POCO_WebSocketServer.cpp" />
     <ClCompile Include="ScreenImage.cpp" />
+    <ClCompile Include="WebSocketService_Echo.cpp" />
+    <ClCompile Include="WebSocketService_GazeTracking.cpp" />
+    <ClCompile Include="WebSocketService_Log.cpp" />
+    <ClCompile Include="WebSocketService_Screenshot.cpp" />
     <ClCompile Include="WebSocket_Services.cpp" />
     <ClCompile Include="Windows_sensing.cpp" />
     <ClCompile Include="ET_Interaction.cpp" />

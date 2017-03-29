@@ -12,48 +12,6 @@ using namespace rapidjson;
 
 using namespace std;
 
-WebSocket_GazeTracking_Service::WebSocket_GazeTracking_Service(int log_level)
-{
-	_logLevel = log_level;
-	_gazeTracker = TobiiEyeX_GlobalGazeTracker::Instance();
-	_gazeTracker_logSource = new ET_Producer<ET_Log>();
-
-	_coordinatesSource = new ET_Producer<ET_GazeCoordinates_Content>();
-	_windowPerceiver = new WindowPerceiver(_coordinatesSource);
-	_windowInfoSource = new ET_Producer<ET_WindowInfo_Content>();
-
-	_websocket_producer = new ET_Producer<WebSocketSession_content>();
-	_translator = new WindowInfo_to_WebSocketSession_contentTranslator(_windowInfoSource, _websocket_producer);
-
-
-	_windowPerceiver->Init(_windowInfoSource);
-	_gazeTracker->Init(_coordinatesSource, _gazeTracker_logSource);
-
-	if (_logLevel >= 1)
-	{
-		_eyeX_logDestination = new ET_Logger(_gazeTracker_logSource);
-	}
-	if (_logLevel >= 2)
-	{
-		_coordinatesLogger = new ET_Logger(_coordinatesSource);
-		_windowInfoDestination = new ET_Logger(_windowInfoSource);
-	}
-}
-ET_Producer<WebSocketSession_content>* WebSocket_GazeTracking_Service::onNewSubscription(WebSocket_Session* session)
-{
-	return _websocket_producer;
-}
-
-void WebSocket_GazeTracking_Service::start_service()
-{
-	_gazeTracker->start(TX_GAZEPOINTDATAMODE_LIGHTLYFILTERED);
-}
-
-void WebSocket_GazeTracking_Service::stop_service()
-{
-	_gazeTracker->stop();
-}
-
 void WebSocket_Generic_Service::start()
 {
 	if (!_running)
@@ -158,30 +116,6 @@ void WebSocket_Session::attach_consumer_to_service(WebSocket_Generic_Service * s
 }
 
 
-void WindowInfo_to_WebSocketSession_contentTranslator::setProducer(ET_Producer<WebSocketSession_content>* producer)
-{
-	_producer = producer;
-}
-
-ET_Producer<WebSocketSession_content>* WindowInfo_to_WebSocketSession_contentTranslator::getProducer()
-{
-	return _producer;
-}
-
-void WindowInfo_to_WebSocketSession_contentTranslator::OnReceive(ET_WindowInfo_Content content)
-{
-	if (_producer != nullptr)
-	{
-		char json[FRAME_LENGHT];
-		double x = content.global_gaze_x - content.window_x;
-		double y = content.global_gaze_y - content.window_y;
-		double timestamp = content.global_gaze_timestamp;
-		int len = sprintf_s(json, "{\"type\":\"gaze_coordinates\",\"x\":%f,\"y\":%f,\"timestamp\":%f,\"global_x\":%f,\"global_y\":%f,\"viewport_x\":%f,\"viewport_y\":%f}",
-			x, y, timestamp, content.global_gaze_x, content.global_gaze_y, content.window_x, content.window_y);
-		_producer->Emit(WebSocketSession_content(json, len, content.window_hwnd, content.ancestorWindow_hwnd));
-	}
-}
-
 void WebSocket_ServiceFrame_Consumer::OnReceive(WebSocketSession_content content)
 {
 	if (content.window_needed)
@@ -203,56 +137,6 @@ void WebSocket_ServiceFrame_Consumer::set_hwnds(unsigned long hwnd, unsigned lon
 	_ancestor_hwnd = ancestor_hwnd;
 }
 
-WebSocket_Log_Service::WebSocket_Log_Service()
-{
-	
-}
-
-ET_Producer<WebSocketSession_content>* WebSocket_Log_Service::onNewSubscription(WebSocket_Session * session)
-{
-	_application_response_producers[session] = session->Subscribe_Service_ApplicationResponseProducer(this);
-	WebSocketSession_clientApplicationContent subscriptionToken = session->getSubscriptionToken(this);
-	printf("%s\n", subscriptionToken.content);
-	WebSocketApplicationResponseLogger* logger = new WebSocketApplicationResponseLogger(_application_response_producers[session]);
-	return nullptr;
-}
-
-void WebSocket_Log_Service::onSessionClosed(WebSocket_Session * session)
-{
-	if (_application_response_producers.find(session) != _application_response_producers.end())
-	{
-		_application_response_producers[session]->RemoveAllDestinations();
-		_application_response_producers.erase(session);
-	}
-	
-}
-
-void WebSocket_Log_Service::stop_service()
-{
-	for (auto iterator : _application_response_producers)
-	{
-		iterator.second->RemoveAllDestinations();
-	}
-}
-
-
-void WebSocketApplicationResponseLogger::OnReceive(WebSocketSession_content content)
-{
-	if (content.length > 0)
-	{
-		content.content[content.length] = '\0';
-	}
-	printf("%s \n", content.content);
-}
-
-void WebSocketApplicationResponseLogger::OnReceive(WebSocketSession_clientApplicationContent content)
-{
-	if (content.length > 0)
-	{
-		content.content[content.length] = '\0';
-	}
-	printf("%s \n", content.content);
-}
 
 WebSocketSession_clientApplicationContent invalid_SubscriptionToken()
 {
@@ -396,82 +280,4 @@ void WebSocket_Service::WebSocketMessageInputForwarder::OnReceive(WebSocketSessi
 		_destination->Emit(WebSocketSession_Message(_session_id, content.content, content.length));
 	}
 	
-}
-
-void Echo_Service::onNewSession(
-	ET_Producer<WebSocketSession_Message>* inputProducer, 
-	ET_Producer<WebSocketSession_Message>* outputProducer, 
-	std::vector<ET_Generic_Producer*>* producers, 
-	std::vector<ET_Consumer*>* consumers,
-	WebSocketSession_Message* subscriptionToken)
-{
-	Document d;
-	d.Parse(subscriptionToken->content);
-	string prepend = "";
-	if (d.HasMember("prepend"))
-	{
-		if (d["prepend"].IsString())
-		{
-			prepend = d["prepend"].GetString();
-		}
-	}
-
-	Echo_Forwarder* echoForwarder = new Echo_Forwarder(inputProducer, outputProducer, prepend);
-	consumers->push_back(echoForwarder);
-}
-
-void Echo_Service::Echo_Forwarder::OnReceive(WebSocketSession_Message message)
-{
-	//do something with the content...
-	cout << "Echo Forwarder received: " << message.content << endl;
-	cout << "prepending: " << _prepend << endl;
-
-	Document d;
-	d.Parse(message.content);
-	string content = "";
-	if (d.HasMember("content"))
-	{
-		if (d["content"].IsString())
-		{
-			content = d["content"].GetString();
-		}
-	}
-
-	message.setContent("\""+ _prepend + content +"\"");
-	_echoDestination->Emit(message);
-}
-
-void Screenshot_Service::onNewSession(
-	ET_Producer<WebSocketSession_Message>* inputProducer, 
-	ET_Producer<WebSocketSession_Message>* outputProducer, 
-	std::vector<ET_Generic_Producer*>* producers, 
-	std::vector<ET_Consumer*>* consumers,
-	WebSocketSession_Message* subscriptionToken)
-{
-	Screenshot_Taker* screenshotTaker = new Screenshot_Taker(inputProducer, outputProducer);
-	consumers->push_back(screenshotTaker);
-}
-
-void Screenshot_Service::Screenshot_Taker::OnReceive(WebSocketSession_Message message)
-{
-	Document d;
-	d.Parse(message.content);
-	if (d.HasMember("command"))
-	{
-		if (d["command"].IsString())
-		{
-			string command = d["command"].GetString();
-			if (command == "take_screenshot")
-			{
-				string tempImgFilePath = "./" + _tempImgFileName + message.session_id + ".jpg";
-				screenshotPrinter->TakeScreenshotOfWindow(message.hwnd, tempImgFilePath);
-				string base64Img = File_to_Base64(tempImgFilePath);
-				remove(tempImgFilePath.c_str());
-				WebSocketSession_Message result(message);
-				string json = "{\"img\":\"" + base64Img + "\"}";
-				result.setContent(json);
-				_destination->Emit(result);
-			}
-		}
-	}
 }

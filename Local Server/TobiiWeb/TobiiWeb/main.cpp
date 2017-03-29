@@ -2,6 +2,10 @@
 #include <stdio.h>
 #include "POCO_WebSocketServer.h"
 #include "WebSocket_Services.h"
+#include "WebSocketService_GazeTracking.h"
+#include "WebSocketService_Log.h"
+#include "WebSocketService_Echo.h"
+#include "WebSocketService_Screenshot.h"
 
 void start_system() {
 	POCO_WebSocketServer* server = POCO_WebSocketServer::Instance();
