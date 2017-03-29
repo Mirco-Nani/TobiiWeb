@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include <stdio.h>
+#include <iostream>
 #include "TobiiEyeX_GlobalGazeTracker.h"
 #include "ET_Interaction.h"
 #include "Windows_sensing.h"

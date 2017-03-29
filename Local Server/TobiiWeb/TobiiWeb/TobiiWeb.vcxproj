@@ -131,7 +131,7 @@
       <AdditionalLibraryDirectories>..\..\EyeXSDK\lib\x86;..\..\POCO\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy /b /y "..\..\EyeXSDK\lib\x86\*.dll" "$(OutDir)"</Command>
+      <Command>copy /b /y "..\..\EyeXSDK\lib\x86\*.dll" "$(OutDir)" &amp; copy /b /y "..\..\POCO\BIN\*.dll" "$(OutDir)"</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
