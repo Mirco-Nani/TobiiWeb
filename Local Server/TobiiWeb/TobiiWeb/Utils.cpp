@@ -103,6 +103,12 @@ std::string File_to_Base64(std::string filepath)
 	std::ifstream is(filepath, std::ifstream::binary);
 	is.seekg(0, is.end);
 	int length = is.tellg();
+
+	if (length < 0) 
+	{
+		return "";
+	}
+
 	is.seekg(0, is.beg);
 
 	//std::cout << length << std::endl;

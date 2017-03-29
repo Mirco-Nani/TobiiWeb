@@ -468,10 +468,8 @@ void Screenshot_Service::Screenshot_Taker::OnReceive(WebSocketSession_Message me
 				string base64Img = File_to_Base64(tempImgFilePath);
 				remove(tempImgFilePath.c_str());
 				WebSocketSession_Message result(message);
-				string json = "{\"img\":\"" + base64Img + "\"}"; //"{ \"content\": {\"img\":\"" + base64Img + "\"}, \"service\":\"Screenshot_Service\", \"type\": \"service_message\"}";
+				string json = "{\"img\":\"" + base64Img + "\"}";
 				result.setContent(json);
-				//result.content = string_to_chars(json);
-				//result.length = json.length();
 				_destination->Emit(result);
 			}
 		}

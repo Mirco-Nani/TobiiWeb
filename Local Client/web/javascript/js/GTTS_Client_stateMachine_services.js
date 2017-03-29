@@ -1,7 +1,11 @@
+var GazeStreamFilters = {
+        none : "none",
+        mean : "mean"
+}
 
 var GazeCoordinatesReceiver = function(params){
     if(params.filter == undefined){
-        params.filter = "mean";
+        params.filter = GazeStreamFilters.mean;
     }
     if(params.filter_size == undefined){
         params.filter_size = 5;
@@ -9,6 +13,101 @@ var GazeCoordinatesReceiver = function(params){
     if(params.onGazeCoordinates == undefined){
         params.onGazeCoordinates = function(x,y){}
     }
+    var coordinates_handler = {
+    
+        filters : {
+            fixedSized_queue : {
+                queue : [],
+                enqueue : function(content)
+                {
+                    this.queue.push(content);
+
+                    if(this.queue.length > params.filter_size)
+                    {
+                        return this.queue.shift();
+                    }    
+                    return false;
+                },
+                dequeue : function()
+                {
+                    if(this.queue.lenght > 0)
+                        return this.queue.shift();
+                    return false;
+                }
+
+            },
+            
+            mean_filter : function()
+            {
+                var filtered_x=0;
+                for(index in this.fixedSized_queue.queue)
+                {
+                    filtered_x += this.fixedSized_queue.queue[index].x;
+                }
+                filtered_x = filtered_x / this.fixedSized_queue.queue.length;
+
+                var filtered_y=0;
+                for(index in this.fixedSized_queue.queue)
+                {
+                    filtered_y += this.fixedSized_queue.queue[index].y;
+                }
+                filtered_y = filtered_y / this.fixedSized_queue.queue.length;
+
+                return {x : filtered_x, y : filtered_y}
+            }
+        },
+        apply_filter : function(param_x,param_y)
+        {
+            if(params.filter == GazeStreamFilters.none)
+            {
+                return {x : param_x, y : param_y}
+            }
+            
+            var coords = {x : param_x, y : param_y};
+            this.filters.fixedSized_queue.enqueue(coords);
+            if(GTTS_Client.params.use_filter == GTTS_Filters.mean)
+            {
+                return this.filters.mean_filter();
+            }
+        },
+        process_coordinates : function(coords)
+        {
+            //console.log(coords.x + " - " + coords.y);
+            var tracked_values ={
+                browser_x : Mir_windowTools.get_browserweb_coordinates().x,
+                browser_y : Mir_windowTools.get_browserweb_coordinates().y,
+                browser_width : Mir_windowTools.get_browserweb_size().width,
+                browser_height : Mir_windowTools.get_browserweb_size().height,
+                viewport_width : Mir_windowTools.get_viewPort_size().width,
+                viewport_height : Mir_windowTools.get_viewPort_size().height,
+                detected_viewport_x : coords.viewport_x,
+                detected_viewport_y : coords.viewport_y,
+                calculated_viewport_x : Mir_windowTools.get_browserweb_coordinates().x,
+                calculated_viewport_y : Mir_windowTools.get_browserweb_coordinates().y + (Mir_windowTools.get_browserweb_size().height - Mir_windowTools.get_viewPort_size().height),
+                
+                timestamp : coords.timestamp
+            }
+            tracked_values.client_side_applied_filter = params.use_filter;
+            
+            filtered_coords = coordinates_handler.apply_filter(coords.x,coords.y);
+            tracked_values.filtered_x=filtered_coords.x;
+            tracked_values.filtered_y=filtered_coords.y;
+            
+            tracked_values.document_relative_filtered_x = tracked_values.filtered_x + Mir_windowTools.get_scroll_offset().horizontal;
+            tracked_values.document_relative_filtered_y = tracked_values.filtered_y + Mir_windowTools.get_scroll_offset().vertical;
+            
+            /*
+            tracked_values.user_created_data = GTTS_Client.onGazeCoordinates( 
+                tracked_values.filtered_x,
+                tracked_values.filtered_y
+
+            );
+            */
+            params.onGazeCoordinates(tracked_values.filtered_x,tracked_values.filtered_y)
+            
+        }    
+    }
+    return coordinates_handler.process_coordinates;
 }
 
 var GTTS_Client = {
@@ -719,10 +818,8 @@ GTTS_webSocket.webSocket_callbacks = {
     onmessage : function(e)
     {
         var msg = e.data;
-        //msg = msg.replace(/[\n\r]/g, '');
         msg = msg.replace(/[\n]/g, '\\n');
         msg = msg.replace(/[\r]/g, '\\r');
-        //console.log(msg)
         var content;
         content = JSON.parse(msg);
         if(content.type=="web_page_authentication_done")
@@ -735,12 +832,16 @@ GTTS_webSocket.webSocket_callbacks = {
         }  
         else if(content.type=="gaze_coordinates")
         {
-            GTTS_coordinates_handler.process_coordinates(content);
+            if( GTTS_Client.params.onMessage["GazeTracking_Service"] == undefined){
+                GTTS_coordinates_handler.process_coordinates(content);
+                console.log(content)
+            }else{
+                GTTS_Client.params.onMessage["GazeTracking_Service"](content)
+            }
+            
         }
         else if(content.type=="service_message")
         {
-            //console.log("received unhandled type "+ content.type + "in:\n")
-            //console.log(content);
             GTTS_Client.params.onMessage[content.service](content.content)
         }
     },
@@ -833,6 +934,13 @@ GTTS_Client.start = function(opts)
 GTTS_Client.stop = function()
 {
     GTTS_StateMachine.sendEvent({type : "disconnect"});
+}
+
+GTTS_Client.send_message = function(service, message){
+    if(GTTS_StateMachine.get_current_state_name()=="session_is_open")
+    {
+        GTTS_webSocket.send_client_response_to_service(message, service);
+    }
 }
 
 GTTS_Client.test_sendLog = function()

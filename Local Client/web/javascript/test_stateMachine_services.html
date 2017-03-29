@@ -39,7 +39,7 @@
                 services : [
                     {name : "GazeTracking_Service", page_url : window.location.href},
                     {name : "Log_Service"},
-                    {name : "Echo_Service", prepend : "Echo Service Responded: "},
+                    {name : "Echo_Service", prepend : "The server responded with: "},
                     {name : "Screenshot_Service"}
                     /*
                     ,{name : "ClientData_Service", page_url : window.location.href }
@@ -53,17 +53,38 @@
                     */
                 ],
                 onMessage : {
-                    /*
+                    
                     "GazeTracking_Service" : GazeCoordinatesReceiver({
                         filter: "mean",
-                        filter_size; 5,
+                        filter_size: 5,
                         onGazeCoordinates: function(x,y){
+                            //console.log("received: "+x+" - "+y);
+                            var theDiv = document.getElementById("theDiv")
+                            theDiv.style.left=x-5;
+                            theDiv.style.top=y-5;
+                            
+                            var hovered_elements = document.elementsFromPoint(x,y);
+                            //console.log(hovered_elements);
+                            var found = false;
+                            for(index in hovered_elements)
+                            {
+                                if(hovered_elements[index].id == "hoverDiv")
+                                {
+                                    hovered_elements[index].style.backgroundColor="green";
+                                    found = true;
+                                }
+                            }
+                            if(!found)
+                            {
+                                document.getElementById("hoverDiv").style.backgroundColor="grey";
+                            }
 
                         }
-                    }),*/
+                    }),
                     "Echo_Service" : function(message){
-                        console.log("received: ");
-                        console.log(message)
+                        //console.log("received: ");
+                        //console.log(message)
+                        alert(message);
                     },
                     "Screenshot_Service" : function(message){
                         console.log("received: ");
@@ -117,7 +138,7 @@
         <button onclick="GTTS_Client.stop();">end socket connection</button>
         <button onclick="GTTS_Client.test_sendLog();">send message</button>
         <button onclick="test_echo()">test echo</button>
-        <button onclick="GTTS_Client.test_screenshot()">test screenshot</button>
+        <button onclick="GTTS_Client.test_screenshot()">take screenshot</button>
         <!--
         <button onclick="GTTS_Client.send_screenshot_request();">take screenshot</button>
         <button onclick="test_send_client_data();">send test client data</button>
