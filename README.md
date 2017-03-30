@@ -63,13 +63,17 @@ TobiiWeb_Client.start({
 ```
 <br />
 
-Then, if you want to close the connection with the **Local Server** :<br />
+And that's it, you will receive the stream of gaze coordinates in the callback passed to the  `GazeCoordinatesReceiver`.
+
+<br />
+
+Then, whenever want to close the connection with the **Local Server** :<br />
 
 ```javascript
 TobiiWeb_Client.stop();
 ```
 <br />
-And that's it, you will receive the stream of gaze coordinates in the callback passed to the  `GazeCoordinatesReceiver`.
+
 
 ### Things to know about Gaze Coordinates:
  * Gaze coorinates come in pairs of floating point numbers (x,y) and their unit of measure is *pixel* (yes, the precision is sub-pixel since they are floating point)
@@ -77,5 +81,5 @@ And that's it, you will receive the stream of gaze coordinates in the callback p
  * A webpage will receive gaze coordinates only if they fall in its window, even if two webpages are visually overlapped on the screen.
 
 ## Contributions
-* If you're interested in modifying or extend the **Local Server**, please refer to [this](https://github.com/Mirco-Nani/TobiiWeb/blob/master/Local%20Server/README.md)
-* If you're interested in modifying or extend the **Local Client**, please refer to [this](https://github.com/Mirco-Nani/TobiiWeb/blob/master/Local%20Client/README.md)
+* If you're interested in modifying or extend the **Local Server**, please refer to [this Readme](https://github.com/Mirco-Nani/TobiiWeb/blob/master/Local%20Server/README.md)
+* If you're interested in modifying or extend the **Local Client**, please refer to [this Readme](https://github.com/Mirco-Nani/TobiiWeb/blob/master/Local%20Client/README.md)
