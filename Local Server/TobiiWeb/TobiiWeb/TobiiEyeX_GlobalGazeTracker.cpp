@@ -1,3 +1,21 @@
+/*
+*
+*  Copyright 2016 Mirco Nani
+*
+*  Licensed under the Apache License, Version 2.0 (the "License");
+*  you may not use this file except in compliance with the License.
+*  You may obtain a copy of the License at
+*
+*      http://www.apache.org/licenses/LICENSE-2.0
+*
+*  Unless required by applicable law or agreed to in writing, software
+*  distributed under the License is distributed on an "AS IS" BASIS,
+*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*  See the License for the specific language governing permissions and
+*  limitations under the License.
+*
+*/
+
 #include "stdafx.h"
 #include "TobiiEyeX_GlobalGazeTracker.h"
 #include "ET_Interaction.h"
@@ -68,7 +86,7 @@ void TX_CALLCONVENTION OnEngineConnectionStateChanged(TX_CONNECTIONSTATE connect
 	switch (connectionState) {
 	case TX_CONNECTIONSTATE_CONNECTED: {
 		unsigned int success;
-		Log("The connection state is now CONNECTED (We are connected to the EyeX Engine)");
+		Log("The Tobii EyeX connection state is now CONNECTED (We are connected to the EyeX Engine)");
 		// commit the snapshot with the global interactor as soon as the connection to the engine is established.
 		// (it cannot be done earlier because committing means "send to the engine".)
 		success = txCommitSnapshotAsync(g_hGlobalInteractorSnapshot, OnSnapshotCommitted, NULL) == TX_RESULT_OK;
@@ -76,25 +94,25 @@ void TX_CALLCONVENTION OnEngineConnectionStateChanged(TX_CONNECTIONSTATE connect
 			Log("Failed to initialize the data stream.");
 		}
 		else {
-			Log("Waiting for gaze data to start streaming...");
+			Log("Gaze data stream ready.");
 		}
 	}
 	break;
 
 	case TX_CONNECTIONSTATE_DISCONNECTED:
-		Log("The connection state is now DISCONNECTED (We are disconnected from the EyeX Engine)");
+		Log("The Tobii EyeX connection state is now DISCONNECTED (We are disconnected from the EyeX Engine)");
 		break;
 
 	case TX_CONNECTIONSTATE_TRYINGTOCONNECT:
-		Log("The connection state is now TRYINGTOCONNECT (We are trying to connect to the EyeX Engine)");
+		Log("The Tobii EyeX connection state is now TRYINGTOCONNECT (We are trying to connect to the EyeX Engine)");
 		break;
 
 	case TX_CONNECTIONSTATE_SERVERVERSIONTOOLOW:
-		Log("The connection state is now SERVER_VERSION_TOO_LOW: this application requires a more recent version of the EyeX Engine to run.");
+		Log("The Tobii EyeX connection state is now SERVER_VERSION_TOO_LOW: this application requires a more recent version of the EyeX Engine to run.");
 		break;
 
 	case TX_CONNECTIONSTATE_SERVERVERSIONTOOHIGH:
-		Log("The connection state is now SERVER_VERSION_TOO_HIGH: this application requires an older version of the EyeX Engine to run.");
+		Log("The Tobii EyeX connection state is now SERVER_VERSION_TOO_HIGH: this application requires an older version of the EyeX Engine to run.");
 		break;
 	}
 }

@@ -29,7 +29,7 @@ void start_system() {
 
 	server->start();
 
-	printf("Press any key to exit...\n");
+	printf("Press any key to exit...\n\n");
 	getchar();
 	printf("Exiting.\n");
 
