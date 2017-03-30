@@ -39,7 +39,8 @@ You should see a red dot following your gaze.<br />
 In order to use the **Local Client** in your webpage, import the javascript library "Local Client/js/TobiiWeb_Client.js"<br />
 ```javascript
 <script type="text/javascript" src="js/TobiiWeb_Client.js"></script>
-```<br />
+```
+<br />
 
 Then, initialize the TobiiWeb client:<br />
 
