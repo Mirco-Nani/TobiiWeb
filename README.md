@@ -75,3 +75,6 @@ And that's it, you will receive the stream of gaze coordinates in the callback p
  * Gaze coordinates are always relative to the top-left corner of the most inner window containing the webpage, regardless the position of the browserweb in your screen.
  * A webpage will receive gaze coordinates only if they fall in its window, even if two webpages are visually overlapped on the screen.
 
+## Contributions
+* If you're interested in modifying or extend the **Local Server**, please refer to [this](https://github.com/Mirco-Nani/TobiiWeb/blob/master/Local%20Server/README.md)
+* If you're interested in modifying or extend the **Local Client**, please refer to [this](https://github.com/Mirco-Nani/TobiiWeb/blob/master/Local%20Client/README.md)
