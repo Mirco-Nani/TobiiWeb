@@ -61,3 +61,17 @@ TobiiWeb_Client.start({
   }
 });
 ```
+<br />
+Then, if you want to close the connection with the **Local Server**:<br />
+
+```javascript
+TobiiWeb_Client.stop();
+```
+<br />
+And that's it, you will receive the stream of gaze coordinates in the callback passed to the  `GazeCoordinatesReceiver`.
+
+### Things to know about Gaze Coordinates:
+ * Gaze coorinates come in pairs of floating point numbers (x,y) and their unit of measure is *pixel* (yes, the precision is sub-pixel since they are floating point)
+ * Gaze coordinates are always relative to the top-left corner of the most inner window containing the webpage, regardless the position of the browserweb in your screen.
+ * A webpage will receive gaze coordinates only if they fall in its window, even if two webpages are visually overlapped on the screen.
+
