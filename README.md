@@ -62,7 +62,7 @@ TobiiWeb_Client.start({
 });
 ```
 <br />
-Then, if you want to close the connection with the **Local Server**:<br />
+Then, if you want to close the connection with the **Local Server** :<br />
 
 ```javascript
 TobiiWeb_Client.stop();
