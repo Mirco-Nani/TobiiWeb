@@ -46,7 +46,7 @@ Then, initialize the TobiiWeb client:<br />
 
 ```javascript
 TobiiWeb_Client.start({
-  enable_state_machine_logs : true
+  enable_state_machine_logs : true,
   services : [
       {name : "GazeTracking_Service", page_url : window.location.href}
   ],
@@ -76,7 +76,7 @@ TobiiWeb_Client.stop();
 
 
 ### Things to know about Gaze Coordinates:
- * Gaze coorinates come in pairs of floating point numbers (x,y) and their unit of measure is *pixel* (yes, the precision is sub-pixel since they are floating point)
+ * Gaze coordinates come in pairs of floating point numbers (x,y) and their unit of measure is *pixel* (yes, the precision is sub-pixel since they are floating point)
  * Gaze coordinates are always relative to the top-left corner of the most inner window containing the webpage, regardless the position of the browserweb in your screen.
  * A webpage will receive gaze coordinates only if they fall in its window, even if two webpages are visually overlapped on the screen.
 
