@@ -150,4 +150,4 @@ At this point, you can receive the Base64 encoded image in the callback:<br />
 <br />
 
 ## Contributions
-* If you're interested in implementing new services to the **Local Server**, please refer to [this guide](https://github.com/Mirco-Nani/TobiiWeb/blob/master/Local%20Server/README.md)
+* If you're interested in implementing new services in the **Local Server**, please refer to [this guide](https://github.com/Mirco-Nani/TobiiWeb/blob/master/Local%20Server/README.md)
