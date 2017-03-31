@@ -80,6 +80,75 @@ TobiiWeb_Client.stop();
  * Gaze coordinates are always relative to the top-left corner of the most inner window containing the webpage, regardless the position of the browserweb in your screen.
  * A webpage will receive gaze coordinates only if they fall in its window, even if two webpages are visually overlapped on the screen.
 
+<br />
+
+### Additional services
+The stream of gaze coordinates (namely, "GazeTracking_Service") is not the only service implemented in the **Local Server**. <br />
+Currently, the following services are available:
+ * GazeTracking_Service: provides the stream of gaze coodinates
+ * Screenshot_Service: provides a Base64 encoded screenshot of the currently visible portion of the webpage.
+ * Echo_Service: provides the same message sent from the **Local Client** back to it.
+ 
+ <br />
+ 
+ You can specify which services to use during the TobiiWeb client initialization.
+ 
+ <br />
+ 
+ ```javascript
+TobiiWeb_Client.start({
+  enable_state_machine_logs : true,
+  services : [
+      {name : "GazeTracking_Service", page_url : window.location.href},
+      {name : "Screenshot_Service"}
+  ],
+  onMessage : {
+      ""GazeTracking_Service"" : GazeCoordinatesReceiver({
+          onGazeCoordinates: function(x,y){
+              /*
+                Here you will receive the coordinates of the user's gaze point as (x,y)
+              */
+          }
+      }),
+      "Screenshot_Service" : function(message){
+          /*
+            Here you will receive the Base64 current window's screenshot as message.img
+          */
+      }
+  }
+});
+```
+
+<br />
+
+In the example above, two services are requested: *GazeTracking_Service* and *Screenshot_Service*. <br />
+Unlike *GazeTracking_Service*, which provides a constant stream of data, *Screenshot_Service* needs to be triggered by a **request**. <br />
+**Requests** are sent to the **Local Server** using **Messages**:
+
+ ```javascript
+TobiiWeb_Client.send_message("Screenshot_Service", {command:"take_screenshot"});
+```
+
+<br />
+
+When the **Local Server** receives this message, it takes a screenshot of the current webpage in JPEG format, then it encodes it in Base64 and sends the result back to the **Local Client**.<br />
+At this point, you can receive the Base64 encoded image in the callback:<br />
+
+ ```javascript
+ TobiiWeb_Client.start({
+...
+  onMessage : {
+      ...
+      "Screenshot_Service" : function(message){
+          var base64Img = message.img;
+      }
+      ...
+  }
+});
+```
+
+<br />
+
 ## Contributions
-* If you're interested in modifying or extend the **Local Server**, please refer to [this Readme](https://github.com/Mirco-Nani/TobiiWeb/blob/master/Local%20Server/README.md)
-* If you're interested in modifying or extend the **Local Client**, please refer to [this Readme](https://github.com/Mirco-Nani/TobiiWeb/blob/master/Local%20Client/README.md)
+* If you're interested in modifying or extending the **Local Server**, please refer to [this Readme](https://github.com/Mirco-Nani/TobiiWeb/blob/master/Local%20Server/README.md)
+* If you're interested in modifying or extending the **Local Client**, please refer to [this Readme](https://github.com/Mirco-Nani/TobiiWeb/blob/master/Local%20Client/README.md)
